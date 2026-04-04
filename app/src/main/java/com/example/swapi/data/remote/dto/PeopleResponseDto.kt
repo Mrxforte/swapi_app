@@ -1,0 +1,8 @@
+package com.example.swapi.data.remote.dto
+
+import com.squareup.moshi.Json
+
+data class PeopleResponseDto(
+    @Json(name = "count") val count: Int,
+    @Json(name = "results") val results: List<PersonDto>
+)
