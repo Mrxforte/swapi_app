@@ -31,15 +31,31 @@ class PeopleViewModel @Inject constructor(
         _uiState.update { it.copy(searchQuery = query) }
     }
 
-    fun refresh() {
+    fun refresh(isPullRefresh: Boolean = false) {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            val hasCachedData = _uiState.value.people.isNotEmpty()
+            _uiState.update {
+                it.copy(
+                    isLoading = !hasCachedData && !isPullRefresh,
+                    isRefreshing = hasCachedData || isPullRefresh,
+                    errorMessage = if (hasCachedData) null else it.errorMessage
+                )
+            }
+
             val result = refreshPeople()
             if (result.isFailure && _uiState.value.people.isEmpty()) {
                 _uiState.update {
                     it.copy(
                         isLoading = false,
+                        isRefreshing = false,
                         errorMessage = AppStrings.OfflineEmptyError
+                    )
+                }
+            } else {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        isRefreshing = false
                     )
                 }
             }

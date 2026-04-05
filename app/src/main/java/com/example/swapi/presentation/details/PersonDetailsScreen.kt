@@ -1,12 +1,10 @@
 package com.example.swapi.presentation.details
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,6 +12,7 @@ import androidx.compose.ui.Modifier
 import com.example.swapi.presentation.designsystem.AppStrings
 import com.example.swapi.presentation.designsystem.Dimens
 import com.example.swapi.presentation.designsystem.components.AppScreenScaffold
+import com.example.swapi.presentation.designsystem.components.DetailHeroCard
 import com.example.swapi.presentation.designsystem.components.DetailInfoCard
 import com.example.swapi.presentation.designsystem.components.DetailMessageCard
 import com.example.swapi.presentation.designsystem.components.DetailSectionTitle
@@ -25,12 +24,13 @@ fun PersonDetailsScreen(
     onBack: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+    val details = state.details
 
     AppScreenScaffold(
-        title = AppStrings.DetailsTitle,
-        onBack = onBack
+        title = details?.person?.name ?: AppStrings.DetailsTitle,
+        onBack = onBack,
+        centerTitle = true
     ) { padding ->
-        val details = state.details
         when {
             state.isLoading -> {
                 LoadingStateView(modifier = Modifier.padding(padding))
@@ -64,10 +64,9 @@ fun PersonDetailsScreen(
                     verticalArrangement = Arrangement.spacedBy(Dimens.SpacingMedium)
                 ) {
                     item {
-                        Text(
-                            text = character.name,
-                            modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.headlineSmall
+                        DetailHeroCard(
+                            title = character.name,
+                            subtitle = "${AppStrings.BirthYearPrefix}: ${character.birthYear}  ·  ${AppStrings.GenderPrefix}: ${character.gender}"
                         )
                     }
 
